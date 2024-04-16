@@ -1,5 +1,7 @@
 __pycache__
 
-data/ 
+/data
 
 LaPa/
+
+*.keras
