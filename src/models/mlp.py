@@ -1,10 +1,10 @@
 import keras
 
 
-def mlp(device: str = 'cuda'):
-    model = keras.Sequential(name='mlp')
-    
-    model.add(keras.layers.Input((1920, )))
+def mlp(device: str = "cuda"):
+    model = keras.Sequential(name="mlp")
+
+    model.add(keras.layers.Input((1920,)))
     model.add(keras.layers.Dense(2048))
     model.add(keras.layers.Dense(1536))
     model.add(keras.layers.Dense(1024))
@@ -14,10 +14,10 @@ def mlp(device: str = 'cuda'):
     model.add(keras.layers.Softmax())
 
     model.compile(
-        optimizer='adam', 
+        optimizer="adam",
         loss=keras.losses.SparseCategoricalCrossentropy(),
-        metrics=['accuracy'],
+        metrics=["accuracy"],
     )
-    # model.to(device)
+    model.to(device)
 
     return model

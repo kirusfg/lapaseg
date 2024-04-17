@@ -23,13 +23,13 @@ class FeatureExtractionDataset(Dataset):
         self._image_sizes = np.cumsum(_image_sizes)
 
     def __len__(self):
-        # return self.size
-        return 1000
+        return self.size
+        # return 1000
 
     def __getitem__(self, index):
         image_index = 0
         for i, sz in enumerate(self._image_sizes):
-            if index > sz:
+            if index >= sz:
                 image_index = i
         image = self.images[image_index]
         landmark = self.landmarks[image_index]
@@ -38,22 +38,27 @@ class FeatureExtractionDataset(Dataset):
         n = index - self._image_sizes[image_index]
         y = n % image_width
         x = n // image_width
+        # print("x", x, "y", y)
         features = extract_features_pixel(image, landmark, x=x, y=y)
         try:
             label = self.labels[image_index][x][y]
+
         except IndexError:
-            print(self.labels[image_index].shape)
+            print("errrrrror:", x, y, self.labels[image_index].shape)
+
             label = 0
 
         return features, label
 
 
 if __name__ == "__main__":
-    images, labels, landmarks = load_data("train", 2)
+    images, labels, landmarks = load_data("train", 1)
 
     train_dataset = FeatureExtractionDataset(images, labels, landmarks)
 
-    train_dataloader = DataLoader(train_dataset, batch_size=512, shuffle=True)
+    train_dataloader = DataLoader(train_dataset, batch_size=512, shuffle=False)
 
-    for s in tqdm(train_dataloader):
-        print(s.shape)
+    for image, label in tqdm(train_dataloader):
+        print(image.shape)
+        print(label.shape)
+        print(np.unique(label))

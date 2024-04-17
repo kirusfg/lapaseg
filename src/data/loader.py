@@ -1,7 +1,6 @@
 import cv2
 import os
 import numpy as np
-import code
 from tqdm import tqdm
 
 
@@ -65,9 +64,9 @@ def load_data(mode, n=-1, resize: bool = True):
         label_paths.append(os.path.join(path_to_labels, labels_list[i]))
         landmark_paths.append(os.path.join(path_to_landmarks, landmarks_list[i]))
 
-    image_paths = sorted(image_paths)[:n]
-    label_paths = sorted(label_paths)[:n]
-    landmark_paths = sorted(landmark_paths)[:n]
+    image_paths = sorted(image_paths)[1337 : 1337 + n]
+    label_paths = sorted(label_paths)[1337 : 1337 + n]
+    landmark_paths = sorted(landmark_paths)[1337 : 1337 + n]
 
     images, labels, landmarks = load_images_and_labels(
         image_paths, label_paths, landmark_paths

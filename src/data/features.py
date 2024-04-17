@@ -1,10 +1,7 @@
 import numpy as np
 from skimage.feature import hog
 import cv2
-import code
 from tqdm import tqdm
-
-from .loader import load_data
 
 
 def calculate_hsv_histograms(patch, bins: int = 16):
@@ -148,6 +145,7 @@ def extract_features_pixel(
     hsv_half_patch = hsv_patch_size // 2
     hog_half_patch = hog_patch_size // 2
     max_half_patch = max(hsv_half_patch, hog_half_patch)
+
     extended_image = cv2.copyMakeBorder(
         image,
         max_half_patch,
@@ -157,19 +155,31 @@ def extract_features_pixel(
         cv2.BORDER_REFLECT,
     )
 
-    i = x
-    j = y
+    ex = x + max_half_patch
+    ey = y + max_half_patch
+
+    # Extract patches centered at (x, y)
     hsv_patch = extended_image[
-        i : i + 2 * hsv_half_patch + 1, j : j + 2 * hsv_half_patch + 1
+        ex - hsv_half_patch : ex + hsv_half_patch + 1,
+        ey - hsv_half_patch : ey + hsv_half_patch + 1,
     ]
     hog_patch = extended_image[
-        i : i + 2 * hog_half_patch + 1, j : j + 2 * hog_half_patch + 1
+        ex - hog_half_patch : ex + hog_half_patch + 1,
+        ey - hog_half_patch : ey + hog_half_patch + 1,
     ]
+    # i = x
+    # j = y
+    # hsv_patch = extended_image[
+    #     i : i + 2 * hsv_half_patch + 1, j : j + 2 * hsv_half_patch + 1
+    # ]
+    # hog_patch = extended_image[
+    #     i : i + 2 * hog_half_patch + 1, j : j + 2 * hog_half_patch + 1
+    # ]
 
     hsv_features = calculate_hsv_histograms(hsv_patch)
     hog_features = calculate_hog_features(hog_patch)
-    loc_features = calculate_loc_features((i, j), (height, width))
-    dist_features = calculate_landmarks_distance((i, j), landmarks)
+    loc_features = calculate_loc_features((x, y), (height, width))
+    dist_features = calculate_landmarks_distance((x, y), landmarks)
 
     # print(
     #     f"hsv_features: {hsv_features.shape}",
@@ -190,11 +200,3 @@ def extract_features_pixel(
     # print(features.shape)
 
     return features
-
-
-if __name__ == "__main__":
-    images, labels, landmarks = load_data("train", 1)
-
-    features = extract_features(images[0], landmarks[0])
-
-    code.interact(local=locals())
