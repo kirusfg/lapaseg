@@ -12,7 +12,7 @@ X_test, y_test = test_data[:, :-1], test_data[:, -1:].squeeze()
 model = RandomForestClassifier(
     n_estimators=100,
     max_depth=50,
-    n_jobs=24,
+    n_jobs=64,
     random_state=42,
     verbose=True,
 )

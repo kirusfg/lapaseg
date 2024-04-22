@@ -24,7 +24,6 @@ class FeatureExtractionDataset(Dataset):
 
     def __len__(self):
         return self.size
-        # return 1000
 
     def __getitem__(self, index):
         image_index = 0
@@ -38,15 +37,9 @@ class FeatureExtractionDataset(Dataset):
         n = index - self._image_sizes[image_index]
         y = n % image_width
         x = n // image_width
-        # print("x", x, "y", y)
+        
         features = extract_features_pixel(image, landmark, x=x, y=y)
-        try:
-            label = self.labels[image_index][x][y]
-
-        except IndexError:
-            print("errrrrror:", x, y, self.labels[image_index].shape)
-
-            label = 0
+        label = self.labels[image_index][x][y]
 
         return features, label
 

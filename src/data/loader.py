@@ -1,6 +1,10 @@
-import cv2
+import code
 import os
+import random
+
+import cv2
 import numpy as np
+
 from tqdm import tqdm
 
 
@@ -46,7 +50,7 @@ def load_images_and_labels(image_paths, label_paths, landmark_paths):
     return images, labels, landmarks
 
 
-def load_data(mode, n=-1, resize: bool = True):
+def load_data(mode, n=-1, shuffle: bool = True, resize: bool = True):
     path_to_imgs = os.path.join(DATASET_DIR, f"{mode}/images")
     path_to_labels = os.path.join(DATASET_DIR, f"{mode}/labels")
     path_to_landmarks = os.path.join(DATASET_DIR, f"{mode}/landmarks")
@@ -64,9 +68,30 @@ def load_data(mode, n=-1, resize: bool = True):
         label_paths.append(os.path.join(path_to_labels, labels_list[i]))
         landmark_paths.append(os.path.join(path_to_landmarks, landmarks_list[i]))
 
-    image_paths = sorted(image_paths)[1337 : 1337 + n]
-    label_paths = sorted(label_paths)[1337 : 1337 + n]
-    landmark_paths = sorted(landmark_paths)[1337 : 1337 + n]
+    image_paths = sorted(image_paths)
+    label_paths = sorted(label_paths)
+    landmark_paths = sorted(landmark_paths)
+
+    if shuffle:
+        if n == -1:
+            n = len(image_paths)
+        data = random.sample(
+            list(
+                zip(
+                    image_paths,
+                    label_paths,
+                    landmark_paths,
+                )
+            ),
+            n,
+        )
+        image_paths = [x[0] for x in data]
+        label_paths = [x[1] for x in data]
+        landmark_paths = [x[2] for x in data]
+    else:
+        image_paths = image_paths[:n]
+        label_paths = label_paths[:n]
+        landmark_paths = landmark_paths[:n]
 
     images, labels, landmarks = load_images_and_labels(
         image_paths, label_paths, landmark_paths
@@ -87,5 +112,5 @@ def load_data(mode, n=-1, resize: bool = True):
 
 
 if __name__ == "__main__":
-    images, labels, landmarks = load_data("train")
-    # code.interact(local=locals())
+    images, labels, landmarks = load_data("train", 5)
+    code.interact(local=locals())
